@@ -3,16 +3,20 @@ const useremail = document.querySelector(".info-user p:nth-child(2)");
 const userphone = document.querySelector(".info-user p:nth-child(3)");
 const userlocation = document.querySelector(".info-user p:nth-child(4)");
 const userage = document.querySelector(".info-user p:nth-child(5)");
+const infoDiv = document.querySelector(".info");
 const button = document.querySelector(".btn");
 const userImg = document.querySelector("#user-image");
 
 function fetchUSer() {
   showSpinner();
   fetch("https://randomuser.me/api/")
-    .then((response) => response.json())
+    .then((response) => {
+      if (response.status !== 200) {
+        throw new Error("Request failed");
+      }
+      return response.json();
+    })
     .then((data) => {
-      // console.log(data);
-
       username.innerHTML = `Name: ${data.results[0].name.first} ${data.results[0].name.last}`;
       useremail.innerHTML = `Email: ${data.results[0].email}`;
       userphone.innerHTML = `Phone: ${data.results[0].cell}`;
@@ -21,6 +25,10 @@ function fetchUSer() {
       userImg.src = `${data.results[0].picture.large}`;
       hideSpinner();
       changeColor(data);
+    })
+    .catch((error) => {
+      hideSpinner();
+      infoDiv.innerHTML = `<p class="error">${error}</p>`;
     });
 }
 function changeColor(colour) {
